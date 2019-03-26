@@ -1,0 +1,82 @@
+
+<!DOCTYPE html>
+<html lang="zh-tw">
+<head>
+  <meta charset="UTF-8">
+  <title>Beauty Site Radar</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="text/javascript" src="http://code.google.com/apis/gears/gears_init.js"></script>
+</head>
+<body>
+<div style="width: 30vw; height: 100vh; background-color: #E6BCC7; float: left; margin: 0px; position: absolute;">
+  <div id="alert">Click the marker to get more information.</div>
+  <div id="place_info">
+    <div id="place_img">
+      <img id="img" src="" width="100%">
+    </div>
+    <div id="place_detail">
+      <div id="store_name">
+      </div>
+      <div id="store_address" class="store_detail"></div>
+      <div id="store_phone" class="store_detail"></div>
+      <div id="sotre_beauty" class="store_detail"></div>
+    </div>
+  </div>
+</div>
+<div id = "map" style="width: 70vw; height: 100vh; background-color: #EFEFEF; float: right; margin: 0px;"></div>
+<script>
+  function initMap() {
+    navigator.geolocation.getCurrentPosition(successCallback); 
+    function successCallback(position){  
+        //var myLatLng = {lat: position.coords.latitude, lng: position.coords.longitude};
+        //var score = [79, 69, 68, 80, 60, 52, 90, 59, 62, 70, 91, 90, 85, 50, 70, 90, 67, 68, 48, 70];
+        var score = [79, 80, 90, 70, 91, 90, 85, 70, 90, 70];
+        var place_ids = ['ChIJCTfwf8-rQjQR8pCUz8iVuhY', 'ChIJT1w6Ay6qQjQRGGGPvH4mtwk','ChIJD2q5DtKrQjQRe3swQg5S0iU', 'ChIJRQX0JdKrQjQRthQuGMV1apw', 'ChIJt9oVTompQjQRRQWI_Q6mwso', 'ChIJ9cRPhLCrQjQRqMgpsbFekQE', 'ChIJj9lPhLCrQjQRJeduZ4avFRU', 'ChIJAXFUqsWrQjQRYXYFABPjnhM', 'ChIJTSp8d9qrQjQRrK7CkEg2Npk', 'ChIJwd1oV7mrQjQRyk2tnFtxTO4'];
+        //var place_ids = ['ChIJCTfwf8-rQjQR8pCUz8iVuhY', 'ChIJe3D4HM-rQjQRuATzrGPLVD8', 'ChIJUztrxbWrQjQRGsdUosiD8LQ', 'ChIJT1w6Ay6qQjQRGGGPvH4mtwk', 'ChIJ875H5tGrQjQRo7SmBXmh14E', 'ChIJ99RXMcqrQjQRJE3gWwNNF9E', 'ChIJD2q5DtKrQjQRe3swQg5S0iU', 'ChIJWYc2dtKrQjQR6IAktDRNOio', 'ChIJH3SPl7CrQjQRaflQ7dF8dek', 'ChIJRQX0JdKrQjQRthQuGMV1apw', 'ChIJt9oVTompQjQRRQWI_Q6mwso', 'ChIJ9cRPhLCrQjQRqMgpsbFekQE', 'ChIJj9lPhLCrQjQRJeduZ4avFRU', 'ChIJz7He8dOrQjQR0FhlyYllp3U', 'ChIJAXFUqsWrQjQRYXYFABPjnhM', 'ChIJTSp8d9qrQjQRrK7CkEg2Npk', 'ChIJ1S3Z6barQjQRUnd4BwJ6NkY', 'ChIJv9il1dqrQjQRJ7otveIgGcs', 'ChIJk-t4sLGrQjQRG0XNTYo1jgg', 'ChIJwd1oV7mrQjQRyk2tnFtxTO4'];
+        var myLatLng = {lat: 25.023782, lng:121.553189};
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 15,
+          center: myLatLng
+        });
+
+        var marker = new google.maps.Marker({
+          position: myLatLng,
+          map: map,
+          icon: "http://maps.google.com/mapfiles/kml/pal2/icon13.png"
+        });
+        //var infowindow = new google.maps.InfoWindow();
+        var service = new google.maps.places.PlacesService(map);
+        var labelIndex = 0;
+        for(i=0; i<10; i++){
+          service.getDetails({placeId: place_ids[i]}, 
+            function(place, status, i) {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                  var marker = new google.maps.Marker({
+                    map: map,
+                    position: place.geometry.location,
+                    label: score[labelIndex].toString()
+                  });
+                  google.maps.event.addListener(marker, 'click', function() {
+                    //document.getElementById("test").style.visibility="hidden";
+                    document.getElementById("place_info").style.visibility="visible";
+                    document.getElementById('img').src="tmp_imgs/"+place.place_id+".jpg";
+                    document.getElementById('store_name').innerHTML=place.name;
+                    document.getElementById('store_address').innerHTML="店家地址: <br/>"+place.formatted_address;
+                    document.getElementById('store_phone').innerHTML="店家電話: <br/>"+place.formatted_phone_number;
+                    document.getElementById('sotre_beauty').innerHTML="網美指數: "+score[place_ids.indexOf(place.place_id)]+"%";
+
+                  });
+                  labelIndex += 1;
+                }
+            });
+        }
+        labelIndex = 0;
+        
+    }
+  }
+</script>
+<script
+async defer src="https://maps.googleapis.com/maps/api/js?key=<Your/Google/Map/API/Key>&libraries=places&callback=initMap">
+</script>
+</body>
+</html>
